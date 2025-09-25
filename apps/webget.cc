@@ -11,8 +11,28 @@ using namespace std;
 namespace {
 void get_URL( const string& host, const string& path )
 {
-  debug( "Function called: get_URL( \"{}\", \"{}\" )", host, path );
-  debug( "get_URL() function not yet implemented" );
+  // Create a TCP socket
+  TCPSocket socket;
+  
+  // Connect to the host on port 80 (HTTP)
+  socket.connect( Address( host, "80" ) );
+  
+  // Send HTTP GET request
+  string request = "GET " + path + " HTTP/1.1\r\n";
+  request += "Host: " + host + "\r\n";
+  request += "Connection: close\r\n";
+  request += "\r\n";
+  
+  socket.write( request );
+  
+  // Read and print the response
+  while ( !socket.eof() ) {
+    string response;
+    socket.read( response );
+    cout << response;
+  }
+  
+  socket.close();
 }
 } // namespace
 
@@ -28,6 +48,8 @@ int main( int argc, char* argv[] )
     // The program takes two command-line arguments: the hostname and "path" part of the URL.
     // Print the usage message unless there are these two arguments (plus the program name
     // itself, so arg count = 3 in total).
+
+
     if ( argc != 3 ) {
       cerr << "Usage: " << args.front() << " HOST PATH\n";
       cerr << "\tExample: " << args.front() << " stanford.edu /class/cs144\n";

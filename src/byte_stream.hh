@@ -4,6 +4,7 @@
 #include <string>
 #include <string_view>
 
+
 class Reader;
 class Writer;
 
@@ -21,16 +22,28 @@ public:
   void set_error() { error_ = true; };       // Signal that the stream suffered an error.
   bool has_error() const { return error_; }; // Has the stream had an error?
 
+
+private:
+
+
 protected:
   // Please add any additional state to the ByteStream here, and not to the Writer and Reader interfaces.
   uint64_t capacity_;
-  bool error_ {};
+  // lib\byte_stream.hh
+  bool error_ = false;  //!< Flag indicating that the stream suffered an error.
+  std::string buffer_ = "";
+  size_t used_ = 0;
+  size_t total_read_ = 0;
+  size_t total_write_ = 0;
+  bool input_end_ = false;
+  
+
 };
 
 class Writer : public ByteStream
 {
 public:
-  void push( std::string data ); // Push data to stream, but only as much as available capacity allows.
+  void push( const std::string& data ); // Push data to stream, but only as much as available capacity allows.
   void close();                  // Signal that the stream has reached its ending. Nothing more will be written.
 
   bool is_closed() const;              // Has the stream been closed?
